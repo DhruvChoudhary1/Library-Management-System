@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Library Management System";
+}
+
+<div class="text-center mt-4">
+
+    <h1 class="display-4">
+        📚 Library Management System
+    </h1>
+
+    <p class="lead">
+        Welcome to the Library Management System.
+    </p>
+
+</div>
+
+<hr />
+
+<div class="row g-4 mt-2">
+
+    <div class="col-md-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <h3>📖 Books</h3>
+                <p>Manage books in the library.</p>
+
+                <a asp-controller="Books"
+                   asp-action="Index"
+                   class="btn btn-primary">
+                    Open
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <h3>👨‍🎓 Students</h3>
+
+                <p>Manage student records.</p>
+
+                <a asp-controller="Student"
+                   asp-action="Index"
+                   class="btn btn-success">
+                    Open
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+
+                <h3>👨‍💼 Librarians</h3>
+
+                <p>Manage librarians.</p>
+
+                <a asp-controller="Librarian"
+                   asp-action="Index"
+                   class="btn btn-warning">
+                    Open
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mt-3">
+
+    <div class="col-md-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+
+                <h3>📕 Borrow</h3>
+
+                <p>Borrow and return books.</p>
+
+                <a asp-controller="Borrow"
+                   asp-action="History"
+                   class="btn btn-danger">
+                    Open
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+
+                <h3>📰 Magazines</h3>
+
+                <p>Manage magazines.</p>
+
+                <a asp-controller="Magazine"
+                   asp-action="Index"
+                   class="btn btn-info">
+                    Open
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+
+                <h3>🗞 Newspapers</h3>
+
+                <p>Manage newspapers.</p>
+
+                <a asp-controller="Newspaper"
+                   asp-action="Index"
+                   class="btn btn-secondary">
+                    Open
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+</div>

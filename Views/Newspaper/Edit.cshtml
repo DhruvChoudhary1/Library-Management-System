@@ -1,0 +1,49 @@
+@model LibraryManagement.Models.Newspaper
+
+<h2>Edit Newspaper</h2>
+
+<form asp-action="Edit">
+
+<input asp-for="Id" type="hidden"/>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="mb-3">
+<label asp-for="Title"></label>
+<input asp-for="Title" class="form-control"/>
+</div>
+
+<div class="mb-3">
+<label asp-for="Publisher"></label>
+<input asp-for="Publisher" class="form-control"/>
+</div>
+
+
+
+<div class="mb-3">
+<label asp-for="PublicationDate"></label>
+<input asp-for="PublicationDate" type="date" class="form-control"/>
+</div>
+
+<div class="form-check mb-3">
+<input asp-for="IsAvailable" class="form-check-input"/>
+<label asp-for="IsAvailable" class="form-check-label"></label>
+</div>
+
+<button class="btn btn-primary">
+Update
+</button>
+
+<a asp-action="Index"
+class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

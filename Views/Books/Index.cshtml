@@ -1,0 +1,470 @@
+@model LibraryManagement.Models.BookListViewModel
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<!-- ============================================================= -->
+<!-- PAGE HEADER -->
+<!-- ============================================================= -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="mb-1">
+            📚 Books
+        </h2>
+
+        <p class="text-muted mb-0">
+            Browse and manage the library book collection.
+        </p>
+    </div>
+
+
+    <!-- ADMIN + LIBRARIAN ONLY -->
+
+    @if (User.IsInRole("Admin") ||
+         User.IsInRole("Librarian"))
+    {
+        <a asp-controller="Books"
+           asp-action="Create"
+           class="btn btn-primary">
+
+            ➕ Add Book
+
+        </a>
+    }
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- SEARCH -->
+<!-- ============================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form asp-controller="Books"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-2">
+
+                <div class="col-md-9">
+
+                    <input type="text"
+                           name="searchQuery"
+                           value="@Model.SearchQuery"
+                           class="form-control"
+                           placeholder="Search by title, author or genre..." />
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="d-grid gap-2 d-md-flex">
+
+                        <button type="submit"
+                                class="btn btn-primary flex-fill">
+
+                            🔍 Search
+
+                        </button>
+
+
+                        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                        {
+                            <a asp-controller="Books"
+                               asp-action="Index"
+                               class="btn btn-secondary flex-fill">
+
+                                Clear
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- BOOK TABLE -->
+<!-- ============================================================= -->
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        @if (Model.Books != null && Model.Books.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table table-striped table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>
+                                Title
+                            </th>
+
+                            <th>
+                                Author
+                            </th>
+
+                            <th>
+                                Genre
+                            </th>
+
+                            <th>
+                                Publication Year
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th class="text-center">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in Model.Books)
+                        {
+                            <tr>
+
+                                <!-- TITLE -->
+
+                                <td>
+
+                                    <strong>
+                                        @item.Title
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- AUTHOR -->
+
+                                <td>
+                                    @item.Author
+                                </td>
+
+
+                                <!-- GENRE -->
+
+                                <td>
+
+                                    <span class="badge bg-secondary">
+
+                                        @item.Genre
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- PUBLICATION YEAR -->
+
+                                <td>
+                                    @item.PublicationYear
+                                </td>
+
+
+                                <!-- AVAILABILITY -->
+
+                                <td>
+
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">
+
+                                            Available
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+
+                                            Borrowed
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td class="text-center">
+
+                                    <div class="d-flex flex-wrap gap-1 justify-content-center">
+
+                                        <!-- DETAILS -->
+                                        <!-- All authenticated users -->
+
+                                        <a asp-controller="Books"
+                                           asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-info">
+
+                                            Details
+
+                                        </a>
+
+
+                                        <!-- ================================= -->
+                                        <!-- ADMIN + LIBRARIAN -->
+                                        <!-- ================================= -->
+
+                                        @if (User.IsInRole("Admin") ||
+                                             User.IsInRole("Librarian"))
+                                        {
+                                            <!-- EDIT -->
+
+                                            <a asp-controller="Books"
+                                               asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-warning">
+
+                                                Edit
+
+                                            </a>
+
+
+                                            <!-- BORROW -->
+
+                                            @if (item.IsAvailable)
+                                            {
+                                                <a asp-controller="Borrow"
+                                                   asp-action="Create"
+                                                   asp-route-bookId="@item.Id"
+                                                   class="btn btn-sm btn-success">
+
+                                                    Borrow
+
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <!-- Find active borrow record -->
+
+                                                var activeBorrow =
+                                                    item.BorrowRecords?
+                                                        .FirstOrDefault(
+                                                            br => br.ReturnDate == null);
+
+                                                @if (activeBorrow != null)
+                                                {
+                                                    <a asp-controller="Borrow"
+                                                       asp-action="Return"
+                                                       asp-route-borrowRecordId="@activeBorrow.Id"
+                                                       class="btn btn-sm btn-primary">
+
+                                                        Return
+
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-secondary"
+                                                            disabled>
+
+                                                        Unavailable
+
+                                                    </button>
+                                                }
+                                            }
+                                        }
+
+
+                                        <!-- ================================= -->
+                                        <!-- ADMIN ONLY -->
+                                        <!-- ================================= -->
+
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-controller="Books"
+                                               asp-action="Delete"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-danger">
+
+                                                Delete
+
+                                            </a>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <!-- ================================================= -->
+            <!-- NO BOOKS -->
+            <!-- ================================================= -->
+
+            <div class="text-center py-5">
+
+                <h4>
+                    No books found
+                </h4>
+
+
+                @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                {
+                    <p class="text-muted">
+
+                        No books matched
+                        "<strong>@Model.SearchQuery</strong>".
+
+                    </p>
+
+                    <a asp-controller="Books"
+                       asp-action="Index"
+                       class="btn btn-secondary">
+
+                        Show All Books
+
+                    </a>
+                }
+                else
+                {
+                    <p class="text-muted">
+                        There are currently no books in the library.
+                    </p>
+
+
+                    @if (User.IsInRole("Admin") ||
+                         User.IsInRole("Librarian"))
+                    {
+                        <a asp-controller="Books"
+                           asp-action="Create"
+                           class="btn btn-primary">
+
+                            ➕ Add First Book
+
+                        </a>
+                    }
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- PAGINATION -->
+<!-- ============================================================= -->
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4"
+         aria-label="Book pagination">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- PREVIOUS -->
+
+            <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Books"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)"
+                   asp-route-searchQuery="@Model.SearchQuery">
+
+                    Previous
+
+                </a>
+
+            </li>
+
+
+            <!-- PAGE NUMBERS -->
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Books"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchQuery="@Model.SearchQuery">
+
+                        @i
+
+                    </a>
+
+                </li>
+            }
+
+
+            <!-- NEXT -->
+
+            <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Books"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)"
+                   asp-route-searchQuery="@Model.SearchQuery">
+
+                    Next
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+}
+
+
+<!-- ============================================================= -->
+<!-- PAGE INFORMATION -->
+<!-- ============================================================= -->
+
+@if (Model.TotalPages > 0)
+{
+    <div class="text-center text-muted mt-2">
+
+        Page @Model.CurrentPage of @Model.TotalPages
+
+    </div>
+}

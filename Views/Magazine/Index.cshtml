@@ -1,0 +1,393 @@
+@model LibraryManagement.Models.MagazineListViewModel
+
+@{
+    ViewData["Title"] = "Magazines";
+}
+
+<!-- ============================================================= -->
+<!-- HEADER -->
+<!-- ============================================================= -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="mb-1">
+            📰 Magazines
+        </h2>
+
+        <p class="text-muted mb-0">
+            Browse and manage the library magazine collection.
+        </p>
+    </div>
+
+    @if (User.IsInRole("Admin") ||
+         User.IsInRole("Librarian"))
+    {
+        <a asp-controller="Magazine"
+           asp-action="Create"
+           class="btn btn-primary">
+
+            ➕ Add Magazine
+
+        </a>
+    }
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- SEARCH -->
+<!-- ============================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form asp-controller="Magazine"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-2">
+
+                <div class="col-md-9">
+
+                    <input type="text"
+                           name="searchQuery"
+                           value="@Model.SearchQuery"
+                           class="form-control"
+                           placeholder="Search by title, publisher or category..." />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="d-grid gap-2 d-md-flex">
+
+                        <button type="submit"
+                                class="btn btn-primary flex-fill">
+
+                            🔍 Search
+
+                        </button>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                        {
+                            <a asp-controller="Magazine"
+                               asp-action="Index"
+                               class="btn btn-secondary flex-fill">
+
+                                Clear
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- MAGAZINE TABLE -->
+<!-- ============================================================= -->
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        @if (Model.Magazines != null && Model.Magazines.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table table-striped table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>Title</th>
+
+                            <th>Publisher</th>
+
+                            <th>Category</th>
+
+                            <th>Issue Date</th>
+
+                            <th>Status</th>
+
+                            <th class="text-center">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model.Magazines)
+                        {
+                            <tr>
+
+                                <!-- TITLE -->
+
+                                <td>
+
+                                    <strong>
+                                        @item.Title
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- PUBLISHER -->
+
+                                <td>
+                                    @item.Publisher
+                                </td>
+
+
+                                <!-- CATEGORY -->
+
+                                <td>
+
+                                    <span class="badge bg-secondary">
+                                        @item.Category
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ISSUE DATE -->
+
+                                <td>
+                                    @item.IssueDate.ToString("dd MMM yyyy")
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">
+                                            Available
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Unavailable
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td class="text-center">
+
+                                    <div class="d-flex flex-wrap gap-1 justify-content-center">
+
+                                        <!-- All authenticated users -->
+
+                                        <a asp-controller="Magazine"
+                                           asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-info">
+
+                                            Details
+
+                                        </a>
+
+
+                                        <!-- Admin + Librarian -->
+
+                                        @if (User.IsInRole("Admin") ||
+                                             User.IsInRole("Librarian"))
+                                        {
+                                            <a asp-controller="Magazine"
+                                               asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-warning">
+
+                                                Edit
+
+                                            </a>
+                                        }
+
+
+                                        <!-- Admin only -->
+
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-controller="Magazine"
+                                               asp-action="Delete"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-danger">
+
+                                                Delete
+
+                                            </a>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <!-- ================================================= -->
+            <!-- EMPTY / NO SEARCH RESULTS -->
+            <!-- ================================================= -->
+
+            <div class="text-center py-5">
+
+                <h4>
+                    No magazines found
+                </h4>
+
+                @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                {
+                    <p class="text-muted">
+
+                        No magazines matched
+                        "<strong>@Model.SearchQuery</strong>".
+
+                    </p>
+
+                    <a asp-controller="Magazine"
+                       asp-action="Index"
+                       class="btn btn-secondary">
+
+                        Show All Magazines
+
+                    </a>
+                }
+                else
+                {
+                    <p class="text-muted">
+                        There are currently no magazines in the library.
+                    </p>
+
+                    @if (User.IsInRole("Admin") ||
+                         User.IsInRole("Librarian"))
+                    {
+                        <a asp-controller="Magazine"
+                           asp-action="Create"
+                           class="btn btn-primary">
+
+                            ➕ Add First Magazine
+
+                        </a>
+                    }
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- PAGINATION -->
+<!-- ============================================================= -->
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4"
+         aria-label="Magazine pagination">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- PREVIOUS -->
+
+            <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Magazine"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)"
+                   asp-route-searchQuery="@Model.SearchQuery">
+
+                    Previous
+
+                </a>
+
+            </li>
+
+
+            <!-- PAGE NUMBERS -->
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Magazine"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchQuery="@Model.SearchQuery">
+
+                        @i
+
+                    </a>
+
+                </li>
+            }
+
+
+            <!-- NEXT -->
+
+            <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Magazine"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)"
+                   asp-route-searchQuery="@Model.SearchQuery">
+
+                    Next
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+}
+
+
+<!-- ============================================================= -->
+<!-- PAGE INFO -->
+<!-- ============================================================= -->
+
+@if (Model.TotalPages > 0)
+{
+    <div class="text-center text-muted mt-2">
+
+        Page @Model.CurrentPage of @Model.TotalPages
+
+    </div>
+}

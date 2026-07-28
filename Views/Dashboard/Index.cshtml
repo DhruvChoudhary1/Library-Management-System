@@ -1,0 +1,67 @@
+@model LibraryManagement.Models.DashboardModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4">Library Dashboard</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card text-center bg-primary text-white mb-3">
+            <div class="card-body">
+                <h5>Total Books</h5>
+                <h2>@Model.TotalBooks</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center bg-success text-white mb-3">
+            <div class="card-body">
+                <h5>Available Books</h5>
+                <h2>@Model.AvailableBooks</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center bg-danger text-white mb-3">
+            <div class="card-body">
+                <h5>Borrowed Books</h5>
+                <h2>@Model.BorrowedBooks</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center bg-dark text-white mb-3">
+            <div class="card-body">
+                <h5>Students</h5>
+                <h2>@Model.TotalStudents</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card text-center bg-secondary text-white">
+            <div class="card-body">
+                <h5>Librarians</h5>
+                <h2>@Model.TotalLibrarians</h2>
+            </div>
+        </div>
+    </div>
+
+</div>

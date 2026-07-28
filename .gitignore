@@ -1,0 +1,98 @@
+# ==============================
+# .NET
+# ==============================
+
+bin/
+obj/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# ==============================
+# Visual Studio
+# ==============================
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ==============================
+# VS Code
+# ==============================
+
+.vscode/
+
+# ==============================
+# JetBrains
+# ==============================
+
+.idea/
+*.sln.iml
+
+# ==============================
+# Database
+# ==============================
+
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ==============================
+# Logs
+# ==============================
+
+*.log
+logs/
+
+# ==============================
+# OS files
+# ==============================
+
+.DS_Store
+Thumbs.db
+
+# ==============================
+# Environment / Secrets
+# ==============================
+
+.env
+.env.*
+secrets.json
+
+# Development configuration may
+# contain local credentials
+appsettings.Development.json
+
+# ==============================
+# Test results
+# ==============================
+
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# ==============================
+# NuGet
+# ==============================
+
+*.nupkg
+*.snupkg
+packages/
+
+# ==============================
+# Temporary files
+# ==============================
+
+*.tmp
+*.temp
+*.bak
+# Assignment / reference documents
+*.pdf

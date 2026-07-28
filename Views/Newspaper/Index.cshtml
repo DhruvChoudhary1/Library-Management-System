@@ -1,0 +1,394 @@
+@model LibraryManagement.Models.NewspaperListViewModel
+
+@{
+    ViewData["Title"] = "Newspapers";
+}
+
+<!-- ============================================================= -->
+<!-- HEADER -->
+<!-- ============================================================= -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="mb-1">
+            📰 Newspapers
+        </h2>
+
+        <p class="text-muted mb-0">
+            Browse and manage the library newspaper collection.
+        </p>
+    </div>
+
+    <!-- ADMIN + LIBRARIAN ONLY -->
+
+    @if (User.IsInRole("Admin") ||
+         User.IsInRole("Librarian"))
+    {
+        <a asp-controller="Newspaper"
+           asp-action="Create"
+           class="btn btn-primary">
+
+            ➕ Add Newspaper
+
+        </a>
+    }
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- SEARCH -->
+<!-- ============================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form asp-controller="Newspaper"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-2">
+
+                <div class="col-md-9">
+
+                    <input type="text"
+                           name="searchQuery"
+                           value="@Model.SearchQuery"
+                           class="form-control"
+                           placeholder="Search by title or publisher..." />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="d-grid gap-2 d-md-flex">
+
+                        <button type="submit"
+                                class="btn btn-primary flex-fill">
+
+                            🔍 Search
+
+                        </button>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                        {
+                            <a asp-controller="Newspaper"
+                               asp-action="Index"
+                               class="btn btn-secondary flex-fill">
+
+                                Clear
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- NEWSPAPER TABLE -->
+<!-- ============================================================= -->
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        @if (Model.Newspapers != null &&
+             Model.Newspapers.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table table-striped table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>
+                                Title
+                            </th>
+
+                            <th>
+                                Publisher
+                            </th>
+
+                            <th>
+                                Publication Date
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th class="text-center">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model.Newspapers)
+                        {
+                            <tr>
+
+                                <!-- TITLE -->
+
+                                <td>
+
+                                    <strong>
+                                        @item.Title
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- PUBLISHER -->
+
+                                <td>
+                                    @item.Publisher
+                                </td>
+
+
+                                <!-- PUBLICATION DATE -->
+
+                                <td>
+                                    @item.PublicationDate.ToString("dd MMM yyyy")
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">
+                                            Available
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Unavailable
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td class="text-center">
+
+                                    <div class="d-flex flex-wrap gap-1 justify-content-center">
+
+                                        <!-- ================================= -->
+                                        <!-- ADMIN + LIBRARIAN -->
+                                        <!-- ================================= -->
+
+                                        @if (User.IsInRole("Admin") ||
+                                             User.IsInRole("Librarian"))
+                                        {
+                                            <a asp-controller="Newspaper"
+                                               asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-warning">
+
+                                                Edit
+
+                                            </a>
+                                        }
+
+
+                                        <!-- ================================= -->
+                                        <!-- ADMIN ONLY -->
+                                        <!-- ================================= -->
+
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-controller="Newspaper"
+                                               asp-action="Delete"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-danger">
+
+                                                Delete
+
+                                            </a>
+                                        }
+
+
+                                        <!-- NORMAL USER MESSAGE -->
+
+                                        @if (!User.IsInRole("Admin") &&
+                                             !User.IsInRole("Librarian"))
+                                        {
+                                            <span class="text-muted">
+                                                View Only
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <!-- ================================================= -->
+            <!-- NO NEWSPAPERS -->
+            <!-- ================================================= -->
+
+            <div class="text-center py-5">
+
+                <h4>
+                    No newspapers found
+                </h4>
+
+                @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                {
+                    <p class="text-muted">
+
+                        No newspapers matched
+                        "<strong>@Model.SearchQuery</strong>".
+
+                    </p>
+
+                    <a asp-controller="Newspaper"
+                       asp-action="Index"
+                       class="btn btn-secondary">
+
+                        Show All Newspapers
+
+                    </a>
+                }
+                else
+                {
+                    <p class="text-muted">
+                        There are currently no newspapers in the library.
+                    </p>
+
+                    @if (User.IsInRole("Admin") ||
+                         User.IsInRole("Librarian"))
+                    {
+                        <a asp-controller="Newspaper"
+                           asp-action="Create"
+                           class="btn btn-primary">
+
+                            ➕ Add First Newspaper
+
+                        </a>
+                    }
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- PAGINATION -->
+<!-- ============================================================= -->
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4"
+         aria-label="Newspaper pagination">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- PREVIOUS -->
+
+            <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Newspaper"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)"
+                   asp-route-searchQuery="@Model.SearchQuery">
+
+                    Previous
+
+                </a>
+
+            </li>
+
+
+            <!-- PAGE NUMBERS -->
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+
+                    <a class="page-link"
+                       asp-controller="Newspaper"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchQuery="@Model.SearchQuery">
+
+                        @i
+
+                    </a>
+
+                </li>
+            }
+
+
+            <!-- NEXT -->
+
+            <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+
+                <a class="page-link"
+                   asp-controller="Newspaper"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)"
+                   asp-route-searchQuery="@Model.SearchQuery">
+
+                    Next
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+}
+
+
+<!-- ============================================================= -->
+<!-- PAGE INFORMATION -->
+<!-- ============================================================= -->
+
+@if (Model.TotalPages > 0)
+{
+    <div class="text-center text-muted mt-2">
+
+        Page @Model.CurrentPage of @Model.TotalPages
+
+    </div>
+}

@@ -1,0 +1,61 @@
+@model LibraryManagement.ViewModels.ReturnViewModel
+
+@{
+    ViewData["Title"] = "Return Book";
+}
+
+<h2>Return Book</h2>
+<hr />
+
+<div class="card">
+
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-4">
+                Book
+            </dt>
+
+            <dd class="col-sm-8">
+                @Model.BookTitle
+            </dd>
+
+            <dt class="col-sm-4">
+                Borrower
+            </dt>
+
+            <dd class="col-sm-8">
+                @Model.BorrowerName
+            </dd>
+
+            <dt class="col-sm-4">
+                Borrow Date
+            </dt>
+
+            <dd class="col-sm-8">
+                @Model.BorrowDate?.ToString("dd MMM yyyy")
+            </dd>
+
+        </dl>
+
+        <form asp-action="Return" method="post">
+
+            <input asp-for="BorrowRecordId" type="hidden" />
+
+            <button type="submit"
+                    class="btn btn-success">
+                Return Book
+            </button>
+
+            <a asp-controller="Books"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
